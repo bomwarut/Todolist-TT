@@ -5,7 +5,7 @@ import App from "./App.tsx";
 import { BrowserRouter } from "react-router-dom";
 import Routing from "./Routing/Routing.tsx";
 import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
-import TodoProvider from "./Context/Globalcontext.tsx";
+import TodoProvider from "./Context/Taskcontext.tsx";
 
 const theme = createTheme({
   colorSchemes: {

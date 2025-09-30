@@ -1,55 +1,72 @@
 import {
-  Button,
+  Box,
   Card,
   CardActionArea,
   CardContent,
+  Collapse,
   IconButton,
+  Modal,
   Stack,
   Tooltip,
   Typography,
 } from "@mui/material";
-import { TodoContext } from "../Context/Globalcontext";
-import { useContext, useState } from "react";
-import type { Selectdata, Task } from "../Interface/globalinterface";
-import "./List.scss";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import WatchLaterIcon from "@mui/icons-material/WatchLater";
-import EditIcon from "@mui/icons-material/Edit";
+import { TaskContext } from "../Context/Taskcontext";
+import { useContext } from "react";
+import type { ExpandMoreProps, Task } from "../Interface/globalinterface";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { styled } from "@mui/material/styles";
+import Taskloadingskeletoncomponent from "../Component/Taskloadingskeleton";
+import CircularProgressWithLabel from "../Component/Circularwithtext";
+import ListmanageEditcomponent from "./ListmanageEdit";
+
+const ExpandMore = styled((props: ExpandMoreProps) => {
+  const { expand, ...other } = props;
+  return <IconButton {...other} />;
+})(({ theme }) => ({
+  marginLeft: "auto",
+  transition: theme.transitions.create("transform", {
+    duration: theme.transitions.duration.shortest,
+  }),
+  variants: [
+    {
+      props: ({ expand }) => !expand,
+      style: {
+        transform: "rotate(0deg)",
+      },
+    },
+    {
+      props: ({ expand }) => !!expand,
+      style: {
+        transform: "rotate(180deg)",
+      },
+    },
+  ],
+}));
 
 export default function Listmanagecomponent() {
-  const context: any = useContext(TodoContext);
-  const { singlestate, setsinglestate } = context;
-
-  const [selectedCard, setSelectedCard] = useState(0);
-  const setselectask = (id: number) => {
-    if (selectedCard !== id) {
-      setSelectedCard(id);
-    }
-  };
-  const togglefinish = (item: Task) =>
-    setsinglestate((prev: Selectdata) => ({
-      ...prev,
-      Task: prev.Task.map((item2: Task) =>
-        item2.id === item.id
-          ? { ...item2, completed: !item2.completed }
-          : { ...item2 }
-      ),
-    }));
+  const context: any = useContext(TaskContext);
+  const { singlestate, Taskmangastate, Selectask, Togglemodal, Expandcard } =
+    context;
 
   return (
-    <Stack
-      direction={"row"}
-      flexWrap={"wrap"}
-      justifyContent={"center"}
-      sx={{ margin: "58px 8px 8px 8px" }}
-      gap={1}
-    >
-      {singlestate.Task?.length > 0
-        ? singlestate.Task.map((item: Task, index: number) => (
-            <Card key={index} sx={{ width: "300px" }}>
+    <>
+      <Stack
+        direction={"row"}
+        flexWrap={"wrap"}
+        justifyContent={"center"}
+        sx={{ margin: "58px 8px 8px 8px" }}
+        gap={1}
+      >
+        {singlestate.loading ? (
+          <Taskloadingskeletoncomponent />
+        ) : singlestate.Task?.length > 0 ? (
+          singlestate.Task.map((item: Task, index: number) => (
+            <Card key={index} sx={{ width: "300px", height: "fit-content" }}>
               <CardActionArea
-                onClick={() => setselectask(item.id)}
-                data-active={selectedCard === item.id ? "" : undefined}
+                onClick={() => Selectask(item)}
+                data-active={
+                  Taskmangastate.selectedCard === item.id ? "" : undefined
+                }
                 sx={{
                   height: "100%",
                   "&[data-active]": {
@@ -60,43 +77,68 @@ export default function Listmanagecomponent() {
                   },
                 }}
               >
-                <CardContent sx={{ height: "100%" }}>
+                <CardContent sx={{ height: "100%", padding: "4px" }}>
                   <Stack
                     direction={"row"}
-                    alignItems={"start"}
+                    alignItems={"center"}
                     justifyContent={"space-between"}
                   >
-                    <Typography variant="h5" component="div">
+                    <Tooltip title="Edit">
+                      <IconButton
+                        size="small"
+                        color={item.completed ? "success" : "error"}
+                        onClick={() => Togglemodal(true)}
+                      >
+                        <CircularProgressWithLabel value={item.progress} />
+                      </IconButton>
+                    </Tooltip>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        whiteSpace: "nowrap",
+                        textOverflow: "ellipsis",
+                        overflow: "hidden",
+                      }}
+                    >
                       {item.title}
                     </Typography>
-                    <Stack direction={"column"} justifyContent={"start"}>
-                      <Tooltip title={item.completed ? "Not done" : "Done"}>
-                        <IconButton
-                          color={item.completed ? "success" : "error"}
-                          onClick={() => togglefinish(item)}
-                        >
-                          {item.completed ? (
-                            <CheckCircleIcon />
-                          ) : (
-                            <WatchLaterIcon />
-                          )}
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="edit">
-                        <IconButton
-                          color={"warning"}
-                          onClick={() => togglefinish(item)}
-                        >
-                          <EditIcon />
-                        </IconButton>
-                      </Tooltip>
-                    </Stack>
+                    <ExpandMore
+                      expand={item.expanded}
+                      onClick={() => Expandcard(item)}
+                      aria-label="show more"
+                    >
+                      <ExpandMoreIcon />
+                    </ExpandMore>
                   </Stack>
                 </CardContent>
+                <Collapse in={item.expanded} timeout="auto" unmountOnExit>
+                  <CardContent>
+                    <Typography>{item.describtion}</Typography>
+                  </CardContent>
+                </Collapse>
               </CardActionArea>
             </Card>
           ))
-        : ""}
-    </Stack>
+        ) : (
+          ""
+        )}
+      </Stack>
+
+      <Modal
+        open={Taskmangastate.openmodal}
+        onClose={() => Togglemodal(false)}
+        sx={{
+          margin: "auto",
+          height: "fit-content",
+          width: "fit-content",
+          maxHeight: "calc(100% - 10px)",
+          maxWidth: "calc(100% - 10px)",
+        }}
+      >
+        <Box>
+          <ListmanageEditcomponent />
+        </Box>
+      </Modal>
+    </>
   );
 }

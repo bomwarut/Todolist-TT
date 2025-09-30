@@ -2,6 +2,9 @@ import { Box, Stack, Typography } from "@mui/material";
 import CircularProgressWithLabel from "../Component/Circularwithtext";
 import { useContext } from "react";
 import { TaskContext } from "../Context/Taskcontext";
+import Taskloadingskeletoncomponent from "../Component/Taskloadingskeleton";
+import Taskcardcomponent from "../Component/Taskcardcomponent";
+import type { Task } from "../Interface/globalinterface";
 
 export default function Dashboardcomponent() {
   const context: any = useContext(TaskContext);
@@ -12,6 +15,15 @@ export default function Dashboardcomponent() {
   const notdonetaskpercent = (notdonetask / total) * 100;
   const inprogresspercent = (inprogress / total) * 100;
   const donetaskpercent = (donetask / total) * 100;
+  const notdonetaskarray = singlestate.Task.filter(
+    (item: Task) => item.progress === 0
+  );
+  const inprogresstaskarray = singlestate.Task.filter(
+    (item: Task) => item.progress > 0 && item.progress < 100
+  );
+  const donetaskarray = singlestate.Task.filter(
+    (item: Task) => item.progress === 100
+  );
 
   return (
     <Stack
@@ -94,18 +106,42 @@ export default function Dashboardcomponent() {
           Total : {singlestate.Task?.length}
         </Typography>
       </Stack>
-      <Stack direction={"row"}>
-        <Box>
+      <Stack direction={"row"} gap={2} justifyContent={"center"} flexWrap={"wrap"}>
+        <Box sx={{ overflow: "auto", maxHeight: " calc(100vh - 138px)" }}>
           <Typography variant="h5">Not done</Typography>
-          <Stack direction={"column"}></Stack>
+          <Stack direction={"column"} gap={1}>
+            {singlestate.loading ? (
+              <Taskloadingskeletoncomponent />
+            ) : (
+              singlestate.Task?.length > 0 && (
+                <Taskcardcomponent data={notdonetaskarray} disabled={true} />
+              )
+            )}
+          </Stack>
         </Box>
-        <Box>
+        <Box sx={{ overflow: "auto", maxHeight: " calc(100vh - 138px)" }}>
           <Typography variant="h5">Inprogress</Typography>
-          <Stack direction={"column"}></Stack>
+          <Stack direction={"column"} gap={1}>
+            {singlestate.loading ? (
+              <Taskloadingskeletoncomponent />
+            ) : (
+              singlestate.Task?.length > 0 && (
+                <Taskcardcomponent data={inprogresstaskarray} disabled={true} />
+              )
+            )}
+          </Stack>
         </Box>
-        <Box>
+        <Box sx={{ overflow: "auto", maxHeight: " calc(100vh - 138px)" }}>
           <Typography variant="h5">Done</Typography>
-          <Stack direction={"column"}></Stack>
+          <Stack direction={"column"} gap={1}>
+            {singlestate.loading ? (
+              <Taskloadingskeletoncomponent />
+            ) : (
+              singlestate.Task?.length > 0 && (
+                <Taskcardcomponent data={donetaskarray} disabled={true} />
+              )
+            )}
+          </Stack>
         </Box>
       </Stack>
     </Stack>

@@ -50,27 +50,37 @@ export default function TodoProvider({ children }: { children: ReactNode }) {
 
   const initialdata = () => {
     setsinglestate((prev: Selectdata) => ({ ...prev, loading: true }));
-    Useapi("https://jsonplaceholder.typicode.com/todos").then((res: any) => {
-      setTimeout(() => {
-        setsinglestate((prev: Selectdata) =>
-          res.status === 200
-            ? {
-                ...prev,
-                Task: res.data.map((item: Task) => ({
-                  ...item,
-                  describtion: "",
-                  datestart: "",
-                  dateend: "",
-                  progress: item.completed ? 100 : 0,
-                  expanded: false,
-                })),
-                uinotfound: false,
-                loading: false,
-              }
-            : { ...prev, Task: [], uinotfound: true, loading: false }
-        );
-      }, 1000);
-    });
+
+    Useapi("https://jsonplaceholder.typicode.com/todos")
+      .then((res: any) => {
+        setTimeout(() => {
+          setsinglestate((prev: Selectdata) =>
+            res.status === 200
+              ? {
+                  ...prev,
+                  Task: res.data.map((item: Task) => ({
+                    ...item,
+                    describtion: "",
+                    datestart: "",
+                    dateend: "",
+                    progress: item.completed ? 100 : 0,
+                    expanded: false,
+                  })),
+                  uinotfound: false,
+                  loading: false,
+                }
+              : { ...prev, Task: [], uinotfound: true, loading: false }
+          );
+        }, 1000);
+      })
+      .catch(() => {
+        setsinglestate((prev: Selectdata) => ({
+          ...prev,
+          Task: [],
+          uinotfound: true,
+          loading: false,
+        }));
+      });
   };
 
   const Togglesnackbar = (val: boolean) =>
@@ -210,7 +220,7 @@ export default function TodoProvider({ children }: { children: ReactNode }) {
         donetask,
         notdonetaskarray,
         inprogresstaskarray,
-        donetaskarray
+        donetaskarray,
       }}
     >
       {children}

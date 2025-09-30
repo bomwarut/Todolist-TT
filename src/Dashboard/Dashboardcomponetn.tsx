@@ -6,6 +6,7 @@ import Taskloadingskeletoncomponent from "../Component/Taskloadingskeleton";
 import Taskcardcomponent from "../Component/Taskcardcomponent";
 import type { Task } from "../Interface/globalinterface";
 import Dashboardloadingskeletoncomponent from "../Component/Dashboardloadingskeleton";
+import Dataemptycomponent from "../Component/Dataempty";
 
 export default function Dashboardcomponent() {
   const context: any = useContext(TaskContext);
@@ -28,12 +29,19 @@ export default function Dashboardcomponent() {
   return (
     <Stack
       direction={"row"}
-      sx={{ padding: "130px 8px 8px 8px", width: "fit-context" }}
+      sx={{
+        height: "100vh",
+        padding: "130px 8px 8px 8px",
+        width: "fit-context",
+      }}
       justifyContent={"space-around"}
+      alignItems={"center"}
       flexWrap={"wrap"}
     >
       {singlestate.loading ? (
         <Dashboardloadingskeletoncomponent />
+      ) : singlestate.uinotfound || singlestate.Task?.length === 0 ? (
+        <Dataemptycomponent />
       ) : (
         <Stack direction={"column"} gap={"20px"} sx={{ width: "fit-content" }}>
           <Stack

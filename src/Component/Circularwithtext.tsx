@@ -5,14 +5,28 @@ import {
   type CircularProgressProps,
 } from "@mui/material";
 
+type ProgressColor =
+  | "inherit"
+  | "primary"
+  | "secondary"
+  | "error"
+  | "info"
+  | "success"
+  | "warning";
+
 export default function CircularProgressWithLabel(
-  props: CircularProgressProps & { value: number }
+  props: CircularProgressProps & {
+    value: number;
+    colors: ProgressColor;
+    sizes: string;
+  }
 ) {
   return (
     <Box sx={{ position: "relative", display: "inline-flex" }}>
       <CircularProgress
+        size={props.sizes === "normal" ? 40 : 200}
         variant="determinate"
-        color={props.value < 100 ? "warning" : "success"}
+        color={props.colors}
         {...props}
       />
       <Box
@@ -27,16 +41,7 @@ export default function CircularProgressWithLabel(
           justifyContent: "center",
         }}
       >
-        <Typography
-          variant="caption"
-          color={
-            props.value < 100 && props.value > 0
-              ? "warning"
-              : props.value === 0
-              ? "error"
-              : "success"
-          }
-        >
+        <Typography variant={props.sizes === "normal" ? "caption" : "h2" } color={props.colors}>
           {`${Math.round(props.value)}%`}
         </Typography>
       </Box>

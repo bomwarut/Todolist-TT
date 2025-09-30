@@ -4,9 +4,12 @@ import DarkModeIcon from "@mui/icons-material/DarkMode";
 import PieChartIcon from "@mui/icons-material/PieChart";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import {
+  Alert,
   AppBar,
   Box,
   IconButton,
+  Modal,
+  Snackbar,
   Toolbar,
   Tooltip,
   Typography,
@@ -15,11 +18,12 @@ import {
 import { useContext, useEffect } from "react";
 import { TaskContext } from "./Context/Taskcontext";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import ListmanageEditcomponent from "./Listmanage/ListmanageEdit";
 
 function App() {
   const { mode, setMode } = useColorScheme();
   const context: any = useContext(TaskContext);
-  const { initialdata, Togglemodal } = context;
+  const { initialdata, Togglemodal, Taskmangastate, Togglesnackbar } = context;
   const toggletheme = () => setMode(mode === "light" ? "dark" : "light");
   const navigate = useNavigate();
 
@@ -37,57 +41,108 @@ function App() {
   }, []);
 
   return (
-    <AppBar color="warning">
-      <Toolbar
-        variant="dense"
+    <>
+      <AppBar color="warning">
+        <Toolbar
+          variant="dense"
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+          }}
+        >
+          <Typography variant="h5">{PageTitle()}</Typography>
+          <Box>
+            <Tooltip title="Add Task">
+              <IconButton
+                onClick={() =>
+                  Togglemodal(
+                    {
+                      userId: 0,
+                      id: 0,
+                      title: "",
+                      describtion: "",
+                      completed: false,
+                      datestart: "",
+                      dateend: "",
+                      progress: 0,
+                      expanded: false,
+                    },
+                    true
+                  )
+                }
+              >
+                <AddCircleOutlineIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Graph">
+              <IconButton onClick={() => navigate("/")}>
+                <PieChartIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Task">
+              <IconButton onClick={() => navigate("todolist")}>
+                <AssignmentIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title={mode === "light" ? "dark mode" : "light mode"}>
+              <IconButton onClick={toggletheme}>
+                {mode === "light" ? <DarkModeIcon /> : <SunnyIcon />}
+              </IconButton>
+            </Tooltip>
+          </Box>
+        </Toolbar>
+      </AppBar>
+
+      <Modal
+        open={Taskmangastate.openmodal}
+        onClose={() =>
+          Togglemodal(
+            {
+              userId: 0,
+              id: 0,
+              title: "",
+              describtion: "",
+              completed: false,
+              datestart: "",
+              dateend: "",
+              progress: 0,
+              expanded: false,
+            },
+            false
+          )
+        }
         sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          flexWrap: "wrap",
+          minWidth: "300px",
+          margin: "auto",
+          height: "fit-content",
+          width: "fit-content",
+          maxHeight: "calc(100% - 10px)",
+          maxWidth: "calc(100% - 10px)",
         }}
       >
-          <Typography variant="h5">{PageTitle()}</Typography>
         <Box>
-          <Tooltip title="Add Task">
-            <IconButton
-              onClick={() =>
-                Togglemodal(
-                  {
-                    userId: 0,
-                    id: 0,
-                    title: "",
-                    describtion: "",
-                    completed: false,
-                    datestart: "",
-                    dateend: "",
-                    progress: 0,
-                    expanded: false,
-                  },
-                  true
-                )
-              }
-            >
-              <AddCircleOutlineIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Graph">
-            <IconButton onClick={() => navigate("/")}>
-              <PieChartIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Task">
-            <IconButton onClick={() => navigate("todolist")}>
-              <AssignmentIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title={mode === "light" ? "dark mode" : "light mode"}>
-            <IconButton onClick={toggletheme}>
-              {mode === "light" ? <DarkModeIcon /> : <SunnyIcon />}
-            </IconButton>
-          </Tooltip>
+          <ListmanageEditcomponent />
         </Box>
-      </Toolbar>
-    </AppBar>
+      </Modal>
+
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={Taskmangastate.opensnackbar}
+        autoHideDuration={3000}
+        onClose={() => Togglesnackbar(false)}
+        key={"topcenter"}
+      >
+        <Alert
+          onClose={() => Togglesnackbar(false)}
+          severity="success"
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          <Typography variant="body1"> Completed.</Typography>
+        </Alert>
+      </Snackbar>
+    </>
   );
 }
 

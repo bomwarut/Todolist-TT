@@ -1,4 +1,4 @@
-import type { IconButtonProps } from "@mui/material";
+import type { IconButtonProps, SnackbarOrigin } from "@mui/material";
 
 export interface Task {
   userId: number;
@@ -23,10 +23,10 @@ export interface Selectdata {
 export interface Taskmange {
   selectedCard: number;
   openmodal: boolean;
-  Taskdata : Task
+  Taskdata : Task;
+  opensnackbar : boolean
 }
 
 export interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
 }
-

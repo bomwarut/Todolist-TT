@@ -2,12 +2,13 @@ import {
   Box,
   Card,
   CardActionArea,
+  CardActions,
   CardContent,
   Chip,
   Collapse,
   IconButton,
-  Modal,
   Stack,
+  Switch,
   Tooltip,
   Typography,
 } from "@mui/material";
@@ -18,7 +19,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { styled } from "@mui/material/styles";
 import Taskloadingskeletoncomponent from "../Component/Taskloadingskeleton";
 import CircularProgressWithLabel from "../Component/Circularwithtext";
-import ListmanageEditcomponent from "./ListmanageEdit";
+import Dataemptycomponent from "../Component/Dataempty";
 
 const ExpandMore = styled((props: ExpandMoreProps) => {
   const { expand, ...other } = props;
@@ -52,18 +53,19 @@ export default function Listmanagecomponent() {
     Selectask,
     Togglemodal,
     Expandcard,
+    ToggleTaskstatus,
     notdonetask,
     inprogress,
     donetask,
   } = context;
 
   return (
-    <>
+    <Box sx={{ padding: "130px 8px 20px 8px" }}>
       <Stack
+        sx={{ marginBottom: "8px" }}
         direction={"row"}
         justifyContent={"center"}
         gap={1}
-        sx={{ margin: "130px 8px 8px 8px" }}
       >
         <Chip
           icon={
@@ -149,7 +151,17 @@ export default function Listmanagecomponent() {
                         color={item.completed ? "success" : "error"}
                         onClick={() => Togglemodal(item, true)}
                       >
-                        <CircularProgressWithLabel value={item.progress} />
+                        <CircularProgressWithLabel
+                          sizes="normal"
+                          colors={
+                            item.progress === 0
+                              ? "error"
+                              : item.progress === 100
+                              ? "success"
+                              : "warning"
+                          }
+                          value={item.progress}
+                        />
                       </IconButton>
                     </Tooltip>
                     <Typography
@@ -176,44 +188,23 @@ export default function Listmanagecomponent() {
                     <Typography>{item.describtion}</Typography>
                   </CardContent>
                 </Collapse>
+                <CardActions>
+                  <Tooltip title="Done / Not done">
+                    <Switch
+                      sx={{ marginLeft: "auto" }}
+                      checked={item.completed}
+                      color="success"
+                      onChange={() => ToggleTaskstatus(item)}
+                    />
+                  </Tooltip>
+                </CardActions>
               </CardActionArea>
             </Card>
           ))
         ) : (
-          ""
+          <Dataemptycomponent />
         )}
       </Stack>
-
-      <Modal
-        open={Taskmangastate.openmodal}
-        onClose={() =>
-          Togglemodal(
-            {
-              userId: 0,
-              id: 0,
-              title: "",
-              describtion: "",
-              completed: false,
-              datestart: "",
-              dateend: "",
-              progress: 0,
-              expanded: false,
-            },
-            false
-          )
-        }
-        sx={{
-          margin: "auto",
-          height: "fit-content",
-          width: "fit-content",
-          maxHeight: "calc(100% - 10px)",
-          maxWidth: "calc(100% - 10px)",
-        }}
-      >
-        <Box>
-          <ListmanageEditcomponent />
-        </Box>
-      </Modal>
-    </>
+    </Box>
   );
 }

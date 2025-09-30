@@ -83,12 +83,20 @@ export default function ListmanageEditcomponent() {
             required
             error={disableform}
             variant="outlined"
+            multiline
+            inputProps={{ maxLength: 80 }}
+            maxRows={3}
+            helperText={title?.length + "/80"}
             onChange={(e) => settitle(e.target.value)}
           />
           <TextField
             value={describtion}
             label="Describtion"
             variant="outlined"
+            multiline
+            maxRows={6}
+            inputProps={{ maxLength: 200 }}
+            helperText={describtion?.length + " / 200"}
             onChange={(e) => setdescribtion(e.target.value)}
           />
         </Stack>
@@ -97,6 +105,7 @@ export default function ListmanageEditcomponent() {
             <Typography variant="body1">Progress</Typography>
             <Stack direction={"row"} gap={3}>
               <Slider
+                color="warning"
                 value={progress}
                 onChange={handleSliderChange}
                 valueLabelDisplay="auto"

@@ -17,6 +17,7 @@ export default function TodoProvider({ children }: { children: ReactNode }) {
   const [Taskmangastate, setTaskmangastate] = useState<Taskmange>({
     selectedCard: 0,
     openmodal: false,
+    opensnackbar: false,
     Taskdata: {
       userId: 0,
       id: 0,
@@ -29,16 +30,16 @@ export default function TodoProvider({ children }: { children: ReactNode }) {
       expanded: false,
     },
   });
-    const notdonetask = singlestate?.Task.filter(
-    (item: Task) => !item.completed
-  )?.length;
-  const inprogress = singlestate?.Task.filter(
-    (item: Task) => item.progress > 0 && item.progress < 100
-  )?.length;
-  const donetask = singlestate?.Task.filter(
-    (item: Task) => item.completed
-  )?.length;
 
+  const notdonetask = singlestate.Task.filter(
+    (t: Task) => !t.completed && t.progress === 0
+  ).length;
+
+  const inprogress = singlestate.Task.filter(
+    (t: Task) => !t.completed && t.progress > 0
+  ).length;
+
+  const donetask = singlestate.Task.filter((t: Task) => t.completed).length;
 
   const initialdata = () => {
     setsinglestate((prev: Selectdata) => ({ ...prev, loading: true }));
@@ -65,15 +66,33 @@ export default function TodoProvider({ children }: { children: ReactNode }) {
     });
   };
 
-  const Togglemodal = (item: Task, val: boolean) => {
-    setTaskmangastate((prev) => ({
-      ...prev,
-      Taskdata: item,
-    }));
+  const Togglesnackbar = (val: boolean) =>
     setTaskmangastate((prev: Taskmange) => ({
       ...prev,
+      opensnackbar: val,
+    }));
+
+  const Togglemodal = (item: Task, val: boolean) =>
+    setTaskmangastate((prev: Taskmange) => ({
+      ...prev,
+      Taskdata: item,
       openmodal: val,
     }));
+
+  const ToggleTaskstatus = (item: Task) => {
+    setsinglestate((prev: Selectdata) => ({
+      ...prev,
+      Task: prev.Task.map((item2: Task) =>
+        item2.id === item.id
+          ? {
+              ...item2,
+              completed: !item2.completed,
+              progress: item2.completed ? 0 : 100,
+            }
+          : { ...item2 }
+      ),
+    }));
+    Togglesnackbar(true);
   };
 
   const Selectask = (item: Task) => {
@@ -108,6 +127,7 @@ export default function TodoProvider({ children }: { children: ReactNode }) {
                     title: item.title,
                     describtion: item.describtion,
                     progress: item.progress,
+                    completed: item.progress === 100 ? true : false,
                   }
                 : item2
             ),
@@ -132,6 +152,7 @@ export default function TodoProvider({ children }: { children: ReactNode }) {
         },
         false
       );
+      Togglesnackbar(true);
     }, 1000);
   };
 
@@ -160,6 +181,7 @@ export default function TodoProvider({ children }: { children: ReactNode }) {
         },
         false
       );
+      Togglesnackbar(true);
     }, 1000);
   };
 
@@ -172,11 +194,13 @@ export default function TodoProvider({ children }: { children: ReactNode }) {
         Selectask,
         Expandcard,
         Togglemodal,
+        Togglesnackbar,
         Savetask,
         Deletetask,
+        ToggleTaskstatus,
         notdonetask,
         inprogress,
-        donetask
+        donetask,
       }}
     >
       {children}

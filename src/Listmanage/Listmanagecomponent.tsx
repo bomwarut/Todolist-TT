@@ -87,7 +87,7 @@ export default function Listmanagecomponent() {
                       <IconButton
                         size="small"
                         color={item.completed ? "success" : "error"}
-                        onClick={() => Togglemodal(true)}
+                        onClick={() => Togglemodal(item, true)}
                       >
                         <CircularProgressWithLabel value={item.progress} />
                       </IconButton>
@@ -126,7 +126,22 @@ export default function Listmanagecomponent() {
 
       <Modal
         open={Taskmangastate.openmodal}
-        onClose={() => Togglemodal(false)}
+        onClose={() =>
+          Togglemodal(
+            {
+              userId: 0,
+              id: 0,
+              title: "",
+              describtion: "",
+              completed: false,
+              datestart: "",
+              dateend: "",
+              progress: 0,
+              expanded: false,
+            },
+            false
+          )
+        }
         sx={{
           margin: "auto",
           height: "fit-content",

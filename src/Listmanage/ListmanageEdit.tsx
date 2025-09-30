@@ -9,7 +9,7 @@ import {
   Slider,
   Input,
 } from "@mui/material";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { TaskContext } from "../Context/Taskcontext";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -17,20 +17,47 @@ export default function ListmanageEditcomponent() {
   const theme = useTheme();
   const context: any = useContext(TaskContext);
   const backgroundwhite = theme.palette.background.paper;
-  const { singlestate, Savetask, Togglemodal } = context;
+  const { singlestate, Savetask, Taskmangastate, Deletetask, Togglemodal } =
+    context;
+
+  const [title, settitle] = useState<string>("");
+  const [describtion, setdescribtion] = useState<string>("");
+  const [progress, setprogress] = useState<number>(0);
+  const [modalheader, setmodalheader] = useState<string>("");
+
+  const handleSliderChange = (event: Event, newValue: number) =>
+    setprogress(newValue);
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) =>
+    setprogress(event.target.value === "" ? 0 : Number(event.target.value));
 
   const submit = () =>
-    Savetask({
-      userId: 0,
-      id: singlestate.Task[singlestate.Task.length - 1].id + 1,
-      title: "",
-      describtion: "",
-      completed: false,
-      datestart: "",
-      dateend: "",
-      progress: 0,
-      expanded: false,
-    });
+    Savetask(
+      {
+        userId: 0,
+        id:
+          modalheader === "Edit"
+            ? Taskmangastate.Taskdata.id
+            : singlestate.Task[singlestate.Task.length - 1].id + 1,
+        title: title,
+        describtion: describtion,
+        completed: progress === 100 ? true : false,
+        datestart: "",
+        dateend: "",
+        progress: progress,
+        expanded: false,
+      },
+      modalheader === "Edit" ? 2 : 1
+    );
+
+  useEffect(() => {
+    if (Taskmangastate.Taskdata.id !== 0) {
+      settitle(Taskmangastate.Taskdata.title);
+      setdescribtion(Taskmangastate.Taskdata.describtion);
+      setprogress(Taskmangastate.Taskdata.progress);
+    }
+    setmodalheader(Taskmangastate.Taskdata.id !== 0 ? "Edit" : "Create");
+  }, [Taskmangastate.openmodal]);
 
   return (
     <Box
@@ -40,7 +67,7 @@ export default function ListmanageEditcomponent() {
       }}
     >
       <Typography variant="h6" sx={{ marginBottom: "20px" }}>
-        Edit Task
+        {modalheader} Task
       </Typography>
       <IconButton
         sx={{ position: "absolute", top: "5px", right: "10px" }}
@@ -50,28 +77,57 @@ export default function ListmanageEditcomponent() {
       </IconButton>
       <Stack direction={"column"} gap={3}>
         <Stack direction={"column"} gap={3}>
-          <TextField label="Title" variant="outlined" />
-          <TextField label="Describtion" variant="outlined" />
-        </Stack>
-        <Typography variant="body1">Progress</Typography>
-        <Stack direction={"row"} gap={3}>
-          <Slider valueLabelDisplay="auto" />
-          <Input
-            value={0}
-            size="small"
-            onChange={() => {}}
-            inputProps={{
-              step: 10,
-              min: 0,
-              max: 100,
-              type: "number",
-            }}
+          <TextField
+            value={title}
+            label="Title"
+            variant="outlined"
+            onChange={(e) => settitle(e.target.value)}
+          />
+          <TextField
+            value={describtion}
+            label="Describtion"
+            variant="outlined"
+            onChange={(e) => setdescribtion(e.target.value)}
           />
         </Stack>
-        <Stack direction={"row"} justifyContent={"end"}>
+        {modalheader === "Edit" && (
+          <>
+            <Typography variant="body1">Progress</Typography>
+            <Stack direction={"row"} gap={3}>
+              <Slider
+                value={progress}
+                onChange={handleSliderChange}
+                valueLabelDisplay="auto"
+              />
+              <Input
+                value={progress}
+                size="small"
+                onChange={handleInputChange}
+                inputProps={{
+                  min: 0,
+                  max: 100,
+                  type: "number",
+                }}
+              />
+            </Stack>
+          </>
+        )}
+        <Stack direction={"row"} justifyContent={"space-between"}>
+          {modalheader === "Edit" && (
+            <Button
+              color="error"
+              variant="contained"
+              loading={singlestate.saving}
+              onClick={() => Deletetask(Taskmangastate.Taskdata)}
+            >
+              <Typography variant="body1">Delete</Typography>
+            </Button>
+          )}
           <Button
+            color="success"
             variant="contained"
             loading={singlestate.saving}
+            sx={{ marginLeft: "auto" }}
             onClick={submit}
           >
             <Typography variant="body1">Save</Typography>

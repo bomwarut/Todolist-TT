@@ -55,18 +55,22 @@ export default function TodoProvider({ children }: { children: ReactNode }) {
     });
   };
 
-  const Togglemodal = (val: boolean) =>
+  const Togglemodal = (item: Task, val: boolean) => {
+    setTaskmangastate((prev) => ({
+      ...prev,
+      Taskdata: item,
+    }));
     setTaskmangastate((prev: Taskmange) => ({
       ...prev,
       openmodal: val,
     }));
+  };
 
   const Selectask = (item: Task) => {
     if (Taskmangastate.selectedCard !== item.id) {
       setTaskmangastate((prev) => ({
         ...prev,
         selectedCard: item.id,
-        Taskdata: item,
       }));
     }
   };
@@ -81,10 +85,22 @@ export default function TodoProvider({ children }: { children: ReactNode }) {
       ),
     }));
 
-  const Savetask = (item: Task) => {
+  const Savetask = (item: Task, type: number) => {
     setsinglestate((prev: Selectdata) => ({
       ...prev,
-      Task: [...prev.Task, { ...item }],
+      Task:
+        type === 1
+          ? [...prev.Task, { ...item }]
+          : prev.Task.map((item2: Task) =>
+              item2.id === item.id
+                ? {
+                    ...item2,
+                    title: item.title,
+                    describtion: item.describtion,
+                    progress: item.progress,
+                  }
+                : item2
+            ),
       saving: true,
     }));
     setTimeout(() => {
@@ -92,7 +108,48 @@ export default function TodoProvider({ children }: { children: ReactNode }) {
         ...prev,
         saving: false,
       }));
-      Togglemodal(false);
+      Togglemodal(
+        {
+          userId: 0,
+          id: 0,
+          title: "",
+          describtion: "",
+          completed: false,
+          datestart: "",
+          dateend: "",
+          progress: 0,
+          expanded: false,
+        },
+        false
+      );
+    }, 1000);
+  };
+
+  const Deletetask = (item: Task) => {
+    setsinglestate((prev: Selectdata) => ({
+      ...prev,
+      Task: prev.Task.filter((item2: Task) => item2.id !== item.id),
+      saving: true,
+    }));
+    setTimeout(() => {
+      setsinglestate((prev: Selectdata) => ({
+        ...prev,
+        saving: false,
+      }));
+      Togglemodal(
+        {
+          userId: 0,
+          id: 0,
+          title: "",
+          describtion: "",
+          completed: false,
+          datestart: "",
+          dateend: "",
+          progress: 0,
+          expanded: false,
+        },
+        false
+      );
     }, 1000);
   };
 
@@ -106,6 +163,7 @@ export default function TodoProvider({ children }: { children: ReactNode }) {
         Expandcard,
         Togglemodal,
         Savetask,
+        Deletetask,
       }}
     >
       {children}

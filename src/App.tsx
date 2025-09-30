@@ -17,11 +17,12 @@ import {
 import { useContext, useEffect } from "react";
 import type { Task } from "./Interface/globalinterface";
 import { TaskContext } from "./Context/Taskcontext";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
 function App() {
   const { mode, setMode } = useColorScheme();
   const context: any = useContext(TaskContext);
-  const { singlestate, initialdata } = context;
+  const { singlestate, initialdata, Togglemodal } = context;
   const notdonetask = singlestate?.Task.filter(
     (item: Task) => !item.completed
   )?.length;
@@ -90,6 +91,28 @@ function App() {
           </Stack>
         </Stack>
         <Box>
+          <Tooltip title="Add Task">
+            <IconButton
+              onClick={() =>
+                Togglemodal(
+                  {
+                    userId: 0,
+                    id: 0,
+                    title: "",
+                    describtion: "",
+                    completed: false,
+                    datestart: "",
+                    dateend: "",
+                    progress: 0,
+                    expanded: false,
+                  },
+                  true
+                )
+              }
+            >
+              <AddCircleOutlineIcon />
+            </IconButton>
+          </Tooltip>
           <Tooltip title="Graph">
             <IconButton onClick={() => navigate("/")}>
               <PieChartIcon />

@@ -6,29 +6,20 @@ import AssignmentIcon from "@mui/icons-material/Assignment";
 import {
   AppBar,
   Box,
-  Chip,
   IconButton,
-  Stack,
   Toolbar,
   Tooltip,
   Typography,
   useColorScheme,
 } from "@mui/material";
 import { useContext, useEffect } from "react";
-import type { Task } from "./Interface/globalinterface";
 import { TaskContext } from "./Context/Taskcontext";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
 function App() {
   const { mode, setMode } = useColorScheme();
   const context: any = useContext(TaskContext);
-  const { singlestate, initialdata, Togglemodal } = context;
-  const notdonetask = singlestate?.Task.filter(
-    (item: Task) => !item.completed
-  )?.length;
-  const donetask = singlestate?.Task.filter(
-    (item: Task) => item.completed
-  )?.length;
+  const { initialdata, Togglemodal } = context;
   const toggletheme = () => setMode(mode === "light" ? "dark" : "light");
   const navigate = useNavigate();
 
@@ -55,41 +46,7 @@ function App() {
           flexWrap: "wrap",
         }}
       >
-        <Stack direction={"row"} gap={1} flexWrap={"wrap"}>
           <Typography variant="h5">{PageTitle()}</Typography>
-          <Stack direction={"row"} gap={1}>
-            <Chip
-              icon={
-                <Typography
-                  variant="body2"
-                  color="white"
-                  sx={{ marginLeft: "8px !important" }}
-                >
-                  {donetask}
-                </Typography>
-              }
-              label="Done"
-              color="success"
-              sx={{ color: "white" }}
-              onClick={() => {}}
-            />
-            <Chip
-              icon={
-                <Typography
-                  variant="body2"
-                  color="white"
-                  sx={{ marginLeft: "8px !important" }}
-                >
-                  {notdonetask}
-                </Typography>
-              }
-              color="error"
-              label="Not done"
-              sx={{ color: "white" }}
-              onClick={() => {}}
-            />
-          </Stack>
-        </Stack>
         <Box>
           <Tooltip title="Add Task">
             <IconButton

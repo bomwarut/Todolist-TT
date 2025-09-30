@@ -24,7 +24,7 @@ export default function ListmanageEditcomponent() {
   const [describtion, setdescribtion] = useState<string>("");
   const [progress, setprogress] = useState<number>(0);
   const [modalheader, setmodalheader] = useState<string>("");
-
+  const disableform: boolean = !title?.toString().trim();
   const handleSliderChange = (event: Event, newValue: number) =>
     setprogress(newValue);
 
@@ -80,6 +80,8 @@ export default function ListmanageEditcomponent() {
           <TextField
             value={title}
             label="Title"
+            required
+            error={disableform}
             variant="outlined"
             onChange={(e) => settitle(e.target.value)}
           />
@@ -129,6 +131,7 @@ export default function ListmanageEditcomponent() {
             loading={singlestate.saving}
             sx={{ marginLeft: "auto" }}
             onClick={submit}
+            disabled={disableform}
           >
             <Typography variant="body1">Save</Typography>
           </Button>

@@ -29,6 +29,16 @@ export default function TodoProvider({ children }: { children: ReactNode }) {
       expanded: false,
     },
   });
+    const notdonetask = singlestate?.Task.filter(
+    (item: Task) => !item.completed
+  )?.length;
+  const inprogress = singlestate?.Task.filter(
+    (item: Task) => item.progress > 0 && item.progress < 100
+  )?.length;
+  const donetask = singlestate?.Task.filter(
+    (item: Task) => item.completed
+  )?.length;
+
 
   const initialdata = () => {
     setsinglestate((prev: Selectdata) => ({ ...prev, loading: true }));
@@ -164,6 +174,9 @@ export default function TodoProvider({ children }: { children: ReactNode }) {
         Togglemodal,
         Savetask,
         Deletetask,
+        notdonetask,
+        inprogress,
+        donetask
       }}
     >
       {children}

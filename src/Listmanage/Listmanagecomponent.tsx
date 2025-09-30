@@ -1,13 +1,35 @@
 import { Box, Chip, Stack, Typography } from "@mui/material";
 import { TaskContext } from "../Context/Taskcontext";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import Taskloadingskeletoncomponent from "../Component/Taskloadingskeleton";
 import Dataemptycomponent from "../Component/Dataempty";
 import Taskcardcomponent from "../Component/Taskcardcomponent";
 
 export default function Listmanagecomponent() {
   const context: any = useContext(TaskContext);
-  const { singlestate, notdonetask, inprogress, donetask } = context;
+  const {
+    singlestate,
+    notdonetask,
+    inprogress,
+    donetask,
+    notdonetaskarray,
+    inprogresstaskarray,
+    donetaskarray,
+  } = context;
+  const [selectfilter, setselectfilter] = useState<number>(0);
+  const senddataarray = () => {
+    if (selectfilter === 1 && donetaskarray.length > 0) {
+      return donetaskarray;
+    } else if (selectfilter === 2 && inprogresstaskarray.length > 0) {
+      return inprogresstaskarray;
+    } else if (selectfilter === 3 && notdonetaskarray.length > 0) {
+      return notdonetaskarray;
+    } else if (selectfilter === 4 && singlestate.Task.length > 0) {
+      return singlestate.Task;
+    } else {
+      return singlestate.Task;
+    }
+  };
 
   return (
     <Box sx={{ padding: "130px 8px 20px 8px" }}>
@@ -30,7 +52,7 @@ export default function Listmanagecomponent() {
           label="Done"
           color="success"
           sx={{ color: "white" }}
-          onClick={() => {}}
+          onClick={() => setselectfilter(1)}
         />
         <Chip
           icon={
@@ -45,7 +67,7 @@ export default function Listmanagecomponent() {
           label="Inprogress"
           color="warning"
           sx={{ color: "white" }}
-          onClick={() => {}}
+          onClick={() => setselectfilter(2)}
         />
         <Chip
           icon={
@@ -60,7 +82,19 @@ export default function Listmanagecomponent() {
           color="error"
           label="Not done"
           sx={{ color: "white" }}
-          onClick={() => {}}
+          onClick={() => setselectfilter(3)}
+        />
+        <Chip
+          icon={
+            <Typography
+              variant="body2"
+              sx={{ marginLeft: "8px !important" }}
+            >
+              {singlestate.Task.length}
+            </Typography>
+          }
+          label="All"
+          onClick={() => setselectfilter(4)}
         />
       </Stack>
       <Stack
@@ -72,7 +106,7 @@ export default function Listmanagecomponent() {
         {singlestate.loading ? (
           <Taskloadingskeletoncomponent />
         ) : singlestate.Task?.length > 0 ? (
-          <Taskcardcomponent data={singlestate.Task} disabled={false} />
+          <Taskcardcomponent data={senddataarray()} disabled={false} />
         ) : (
           <Dataemptycomponent />
         )}

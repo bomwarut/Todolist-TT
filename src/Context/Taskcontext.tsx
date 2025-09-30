@@ -34,12 +34,19 @@ export default function TodoProvider({ children }: { children: ReactNode }) {
   const notdonetask = singlestate.Task.filter(
     (t: Task) => !t.completed && t.progress === 0
   ).length;
-
   const inprogress = singlestate.Task.filter(
     (t: Task) => !t.completed && t.progress > 0
   ).length;
-
   const donetask = singlestate.Task.filter((t: Task) => t.completed).length;
+  const notdonetaskarray = singlestate.Task.filter(
+    (item: Task) => item.progress === 0
+  );
+  const inprogresstaskarray = singlestate.Task.filter(
+    (item: Task) => item.progress > 0 && item.progress < 100
+  );
+  const donetaskarray = singlestate.Task.filter(
+    (item: Task) => item.progress === 100
+  );
 
   const initialdata = () => {
     setsinglestate((prev: Selectdata) => ({ ...prev, loading: true }));
@@ -201,6 +208,9 @@ export default function TodoProvider({ children }: { children: ReactNode }) {
         notdonetask,
         inprogress,
         donetask,
+        notdonetaskarray,
+        inprogresstaskarray,
+        donetaskarray
       }}
     >
       {children}
